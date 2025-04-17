@@ -4,6 +4,8 @@ import { Vector2Field } from "API/Fields/Vector2Field";
 import { Vector3Field } from "API/Fields/Vector3Field";
 import { ValueType } from "../FieldStates";
 import { LogicNode } from "./LogicNode";
+import { UnknownOutput } from "API/Outputs/UnknownOutput";
+
 
 export class ValueOut extends LogicNode {
     static className = "ValueOut";
@@ -15,6 +17,10 @@ export class ValueOut extends LogicNode {
         vector3In: new Vector3Field(0, 0, 0),
     };
 
+    nodeOutputs: { result: UnknownOutput } = {
+        result: new UnknownOutput(this, 0)
+    };
+    
     Calculate = () => {
         let value: unknown;
 
@@ -30,7 +36,7 @@ export class ValueOut extends LogicNode {
                 break;
         }
 
-        return value;
+        this.nodeOutputs.result.SetOutput(value);
     };
 
     GetClassName(): string {

@@ -8,6 +8,7 @@ import { CFrameZero, Rand } from "API/Lib";
 import type { ParticleData } from "API/ParticleService";
 import { SpawnShapeType } from "../FieldStates";
 import { LogicNode } from "./LogicNode";
+import { Vector3Output } from "API/Outputs/Vector3Output";
 
 function GetPositionSquare(width: number, height: number, edge: number, filled: boolean) {
     if (filled) {
@@ -155,6 +156,10 @@ function GetPositionSphere(width: number, height: number, depth: number, edgeWid
 export class Shape extends LogicNode {
     static className = "Shape";
 
+    nodeOutputs: { result: Vector3Output } = {
+        result: new Vector3Output(this, Vector3.zero)
+    };
+
     nodeFields = {
         spawnShape: new StateField(SpawnShapeType, SpawnShapeType.Square),
         sizeVec2: new ConnectableVector2Field(2, 2),
@@ -174,7 +179,11 @@ export class Shape extends LogicNode {
         const rotationCF = CFrame.Angles(math.rad(rotation.x), math.rad(rotation.y), math.rad(rotation.z));
 
         let offset = this.storedOffsets.get(data.particleId);
-        if (offset !== undefined) return rotationCF.mul(offset).Position;
+        
+        if (offset !== undefined)  {
+            this.nodeOutputs.result.SetOutput(rotationCF.mul(offset).Position)
+            return;
+        }
 
         const filled = this.nodeFields.filled.GetBoolean();
         const edgeWidth = this.nodeFields.edgeWidth.GetNumber();
@@ -229,7 +238,7 @@ export class Shape extends LogicNode {
         });
 
         this.storedOffsets.set(data.particleId, offset);
-        return rotationCF.mul(offset).Position;
+        this.nodeOutputs.result.SetOutput(rotationCF.mul(offset).Position);
     };
 
     GetClassName(): string {

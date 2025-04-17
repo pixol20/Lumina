@@ -5,6 +5,8 @@ import { StateField } from "API/Fields/StateField";
 import type { ParticleData } from "API/ParticleService";
 import { MathOperationType, ValueType } from "../FieldStates";
 import { LogicNode } from "./LogicNode";
+import { Vector3Output } from "API/Outputs/Vector3Output";
+import { Vector2Output } from "API/Outputs/Vector2Output";
 
 export class VectorMath extends LogicNode {
     static className = "VectorMath";
@@ -21,6 +23,11 @@ export class VectorMath extends LogicNode {
         vector3B: new ConnectableVector3Field(0, 0, 0),
     };
 
+    nodeOutputs: { vector2: Vector2Output, vector3: Vector3Output } = {
+        vector2: new Vector2Output(this, Vector2.zero),
+        vector3: new Vector3Output(this, Vector3.zero)
+    };
+
     constructor(operationType: string) {
         super();
         this.nodeFields.operationType.SetState(operationType);
@@ -30,80 +37,100 @@ export class VectorMath extends LogicNode {
         const valueTypeA = this.nodeFields.valueTypeA.GetState();
         const operationType = this.nodeFields.operationType.GetState();
 
+
+        let resultVec2: Vector2 | undefined;
+        let resultVec3: Vector3 | undefined;
+
+
         if (operationType === MathOperationType.Add) {
             if (valueTypeA === ValueType.Vector2) {
-                return this.nodeFields.vector2A.GetVector2(data).add(this.nodeFields.vector2B.GetVector2(data));
-            }
-
-            if (valueTypeA === ValueType.Vector3) {
-                return this.nodeFields.vector3A.GetVector3(data).add(this.nodeFields.vector3B.GetVector3(data));
+                const res = this.nodeFields.vector2A.GetVector2(data)
+                    .add(this.nodeFields.vector2B.GetVector2(data));
+                resultVec2 = res;
+            } else if (valueTypeA === ValueType.Vector3) {
+                const res = this.nodeFields.vector3A.GetVector3(data)
+                    .add(this.nodeFields.vector3B.GetVector3(data));
+                resultVec3 = res;
             }
         }
+        
 
-        if (operationType === MathOperationType.Subtract) {
+        else if (operationType === MathOperationType.Subtract) {
             if (valueTypeA === ValueType.Vector2) {
-                return this.nodeFields.vector2A.GetVector2(data).sub(this.nodeFields.vector2B.GetVector2(data));
-            }
-
-            if (valueTypeA === ValueType.Vector3) {
-                return this.nodeFields.vector3A.GetVector3(data).sub(this.nodeFields.vector3B.GetVector3(data));
-            }
-        }
-
-        if (operationType === MathOperationType.Multiply) {
-            if (valueTypeA === ValueType.Vector2) {
-                const valueTypeB = this.nodeFields.valueTypeB1.GetState();
-
-                if (valueTypeB === ValueType.Number) {
-                    return this.nodeFields.vector2A.GetVector2(data).mul(this.nodeFields.numberB.GetNumber(data));
-                }
-
-                if (valueTypeB === ValueType.Vector2) {
-                    return this.nodeFields.vector2A.GetVector2(data).mul(this.nodeFields.vector2B.GetVector2(data));
-                }
-            }
-
-            if (valueTypeA === ValueType.Vector3) {
-                const valueTypeB = this.nodeFields.valueTypeB2.GetState();
-
-                if (valueTypeB === ValueType.Number) {
-                    return this.nodeFields.vector3A.GetVector3(data).mul(this.nodeFields.numberB.GetNumber(data));
-                }
-
-                if (valueTypeB === ValueType.Vector3) {
-                    return this.nodeFields.vector3A.GetVector3(data).mul(this.nodeFields.vector3B.GetVector3(data));
-                }
+                const res = this.nodeFields.vector2A.GetVector2(data)
+                    .sub(this.nodeFields.vector2B.GetVector2(data));
+                resultVec2 = res;
+            } else if (valueTypeA === ValueType.Vector3) {
+                const res = this.nodeFields.vector3A.GetVector3(data)
+                    .sub(this.nodeFields.vector3B.GetVector3(data));
+                resultVec3 = res;
             }
         }
+        
 
-        if (operationType === MathOperationType.Divide) {
+        else if (operationType === MathOperationType.Multiply) {
             if (valueTypeA === ValueType.Vector2) {
                 const valueTypeB = this.nodeFields.valueTypeB1.GetState();
-
                 if (valueTypeB === ValueType.Number) {
-                    return this.nodeFields.vector2A.GetVector2(data).div(this.nodeFields.numberB.GetNumber(data));
+                    const res = this.nodeFields.vector2A.GetVector2(data)
+                        .mul(this.nodeFields.numberB.GetNumber(data));
+                    resultVec2 = res;
+                } else if (valueTypeB === ValueType.Vector2) {
+                    const res = this.nodeFields.vector2A.GetVector2(data)
+                        .mul(this.nodeFields.vector2B.GetVector2(data));
+                    resultVec2 = res;
                 }
-
-                if (valueTypeB === ValueType.Vector2) {
-                    return this.nodeFields.vector2A.GetVector2(data).div(this.nodeFields.vector2B.GetVector2(data));
-                }
-            }
-
-            if (valueTypeA === ValueType.Vector3) {
+            } else if (valueTypeA === ValueType.Vector3) {
                 const valueTypeB = this.nodeFields.valueTypeB2.GetState();
-
                 if (valueTypeB === ValueType.Number) {
-                    return this.nodeFields.vector3A.GetVector3(data).div(this.nodeFields.numberB.GetNumber(data));
-                }
-
-                if (valueTypeB === ValueType.Vector3) {
-                    return this.nodeFields.vector3A.GetVector3(data).div(this.nodeFields.vector3B.GetVector3(data));
+                    const res = this.nodeFields.vector3A.GetVector3(data)
+                        .mul(this.nodeFields.numberB.GetNumber(data));
+                    resultVec3 = res;
+                } else if (valueTypeB === ValueType.Vector3) {
+                    const res = this.nodeFields.vector3A.GetVector3(data)
+                        .mul(this.nodeFields.vector3B.GetVector3(data));
+                    resultVec3 = res;
                 }
             }
         }
+        
 
-        warn("VectorMath invalid return");
-        return Vector3.zero as never;
+        else if (operationType === MathOperationType.Divide) {
+            if (valueTypeA === ValueType.Vector2) {
+                const valueTypeB = this.nodeFields.valueTypeB1.GetState();
+                if (valueTypeB === ValueType.Number) {
+                    const res = this.nodeFields.vector2A.GetVector2(data)
+                        .div(this.nodeFields.numberB.GetNumber(data));
+                    resultVec2 = res;
+
+                } else if (valueTypeB === ValueType.Vector2) {
+                    const res = this.nodeFields.vector2A.GetVector2(data)
+                        .div(this.nodeFields.vector2B.GetVector2(data));
+                    resultVec2 = res;
+                }
+            } else if (valueTypeA === ValueType.Vector3) {
+                const valueTypeB = this.nodeFields.valueTypeB2.GetState();
+                if (valueTypeB === ValueType.Number) {
+                    const res = this.nodeFields.vector3A.GetVector3(data)
+                        .div(this.nodeFields.numberB.GetNumber(data));
+                    resultVec3 = res;
+                } else if (valueTypeB === ValueType.Vector3) {
+                    const res = this.nodeFields.vector3A.GetVector3(data)
+                        .div(this.nodeFields.vector3B.GetVector3(data));
+                    resultVec3 = res;
+                }
+            }
+        }
+        
+        if (resultVec2) {
+            this.nodeOutputs.vector2.SetOutput(resultVec2);
+
+        } else if (resultVec3){
+            this.nodeOutputs.vector3.SetOutput(resultVec3);
+        }
+        else{
+            warn("VectorMath invalid operation or type combination");
+        }
     };
 
     GetClassName(): string {

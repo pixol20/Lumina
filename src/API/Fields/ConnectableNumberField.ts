@@ -1,6 +1,6 @@
-import type { LogicNode } from "API/Nodes/Logic/LogicNode";
 import type { ParticleData } from "API/ParticleService";
 import type { Src } from "API/VFXScriptCreator";
+import { NodeOutput } from "API/Outputs/NodeOutput";
 import { NodeField } from "./NodeField";
 import { NumberField } from "./NumberField";
 
@@ -10,7 +10,8 @@ interface SerializedData {
 
 export class ConnectableNumberField extends NodeField {
     numberField: NumberField;
-    connectedNode: undefined | LogicNode;
+    // connectedNode: undefined | LogicNode;
+    connectedOutput: undefined | NodeOutput
 
     constructor(number: number) {
         super();
@@ -22,8 +23,8 @@ export class ConnectableNumberField extends NodeField {
     };
 
     GetNumber = (data: ParticleData) => {
-        if (this.connectedNode !== undefined) {
-            return this.connectedNode.Calculate(data) as number;
+        if (this.connectedOutput !== undefined) {
+            return this.connectedOutput.GetOutput(data) as number;
         }
 
         return this.numberField.GetNumber();
@@ -31,23 +32,46 @@ export class ConnectableNumberField extends NodeField {
 
     SetNumber = (number: number) => {
         this.numberField.SetNumber(number);
-        this.connectedNode = undefined;
+        this.connectedOutput = undefined;
         this.FieldChanged.Fire();
     };
 
-    ConnectNode = (node: LogicNode) => {
-        this.connectedNode = node;
+    ConnectOutput = (in_output: NodeOutput) => {
+        this.connectedOutput = in_output;
         this.FieldChanged.Fire();
     };
 
-    DisconnectNode = () => {
-        this.connectedNode = undefined;
+    DisconnectOutput = () => {
+        this.connectedOutput = undefined;
         this.FieldChanged.Fire();
     };
 
     AutoGenerateField(fieldPath: string, src: Src) {
-        if (this.connectedNode !== undefined) {
-            this.connectedNode.GetAutoGenerationCode(src, `${fieldPath}.ConnectNode(..)`);
+        if (this.connectedOutput !== undefined) {
+            const parentNode = this.connectedOutput.parent;
+
+            let outputKey: string | number |undefined;
+
+            for (const [key, out] of pairs(parentNode.nodeOutputs)) {
+                if (out === this.connectedOutput) {
+                    outputKey = key;
+                    break;
+                }
+            }
+
+            if (!outputKey) {
+
+                warn(`ConnectableNumberField: no matching output on ${parentNode.GetClassName()}#${parentNode.id}`);
+                return;
+            }
+
+            const className = parentNode.GetClassName();
+            const varName = className + parentNode.id;
+
+            parentNode.GetAutoGenerationCode(
+                src,
+                `${fieldPath}.ConnectOutput(${varName}.nodeOutputs.${outputKey})`
+            );
             return;
         }
 

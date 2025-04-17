@@ -6,6 +6,7 @@ import StateField from "Components/NodeFields/StateField";
 import { AddNode, type NodeData } from "Services/NodesService";
 import { StyleColors, StyleProperties } from "Style";
 import { GetZoomScale } from "ZoomScale";
+import ConnectionPointOut from "Components/Connections/ConnectionPointOut";
 import Node from "../Node";
 
 export function CreateGetParentProperty() {
@@ -31,6 +32,7 @@ function GetParentProperty({ data }: { data: NodeData }) {
             IsConnectedToSystem={data.node.connectedSystemId !== undefined}
             ConnectionValueType={ValueType.Vector3}
         >
+            <ConnectionPointOut NodeId={data.node.id} Label="Parent property" NodeOutput={(data.node as GetParentPropertyAPI).nodeOutputs.property} ValueType={ValueType.Vector3} />
             <imagebutton
                 Size={new UDim2(1, 0, 0, 20 * zoomScale)}
                 BackgroundColor3={StyleColors.Highlight}

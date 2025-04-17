@@ -7,6 +7,7 @@ import { Vector2Field } from "Components/NodeFields/Vector2Field";
 import { Vector3Field } from "Components/NodeFields/Vector3Field";
 import { AddNode, type NodeData } from "Services/NodesService";
 import Node from "../Node";
+import ConnectionPointOut from "Components/Connections/ConnectionPointOut";
 
 export function CreateValueOut() {
     return AddNode(new ValueOutAPI(), (data: NodeData) => {
@@ -32,6 +33,7 @@ function ValueOut({ data }: { data: NodeData }) {
             ConnectionValueType={valueType}
             Width={150}
         >
+            <ConnectionPointOut NodeId={data.node.id} Label="Value" NodeOutput={(data.node as ValueOutAPI).nodeOutputs.result} ValueType={ValueType.Number} />
             <StateField NodeId={data.node.id} NodeField={valueTypeRef.current} />
 
             {valueType === ValueType.Number && (

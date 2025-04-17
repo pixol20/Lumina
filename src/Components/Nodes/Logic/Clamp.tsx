@@ -4,6 +4,7 @@ import { Clamp as ClampAPI } from "API/Nodes/Logic/Clamp";
 import ConnectableNumberField from "Components/NodeFields/ConnectableNumberField";
 import { ConnectableVector2Field } from "Components/NodeFields/ConnectableVector2Field";
 import { AddNode, type NodeData } from "Services/NodesService";
+import ConnectionPointOut from "Components/Connections/ConnectionPointOut";
 import Node from "../Node";
 
 export function CreateClamp() {
@@ -18,29 +19,35 @@ export function CreateClamp() {
 }
 
 function Clamp({ data }: { data: NodeData }) {
-    return (
-        <Node
-            Name="Clamp"
-            NodeId={data.node.id}
-            NodeAnchorPoint={data.anchorPoint}
-            IsConnectedToSystem={data.node.connectedSystemId !== undefined}
-            ConnectionValueType={ValueType.Number}
-        >
-            <ConnectableNumberField
+	return (
+		<Node
+			Name="Clamp"
+			NodeId={data.node.id}
+			NodeAnchorPoint={data.anchorPoint}
+			IsConnectedToSystem={data.node.connectedSystemId !== undefined}>
+
+            <ConnectionPointOut
                 NodeId={data.node.id}
-                NodeField={(data.node as ClampAPI).nodeFields.input}
-                NodeFieldName={"input"}
-                Label="Input"
-                AllowNegative={true}
+                NodeOutput={(data.node as ClampAPI).nodeOutputs.clamped}
+                Label="Clamped"
+                ValueType={ValueType.Number}
             />
-            <ConnectableVector2Field
-                NodeId={data.node.id}
-                NodeField={(data.node as ClampAPI).nodeFields.range}
-                NodeFieldName={"range"}
-                ValueLabels={["Min", "Max"]}
-                AllowNegatives={[true, true]}
-                Label="Range"
-            />
-        </Node>
-    );
+
+			<ConnectableNumberField
+				NodeId={data.node.id}
+				NodeField={(data.node as ClampAPI).nodeFields.input}
+				NodeFieldName="input"
+				Label="Input"
+				AllowNegative={true}
+			/>
+			<ConnectableVector2Field
+				NodeId={data.node.id}
+				NodeField={(data.node as ClampAPI).nodeFields.range}
+				NodeFieldName="range"
+				ValueLabels={["Min", "Max"]}
+				AllowNegatives={[true, true]}
+				Label="Range"
+			/>
+		</Node>
+	);
 }

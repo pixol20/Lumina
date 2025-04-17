@@ -1,8 +1,10 @@
-import type { LogicNode } from "API/Nodes/Logic/LogicNode";
+// import type { LogicNode } from "API/Nodes/Logic/LogicNode";
 import type { ParticleData } from "API/ParticleService";
 import type { Src } from "API/VFXScriptCreator";
 import { NodeField } from "./NodeField";
 import { type SimpleVector3, Vector3Field } from "./Vector3Field";
+import { NodeOutput } from "API/Outputs/NodeOutput";
+import { LogicNode } from "API/Nodes/Logic/LogicNode";
 
 interface SerializedData {
     x: number;
@@ -12,10 +14,10 @@ interface SerializedData {
 
 export class ConnectableVector3Field extends NodeField {
     vector3Field: Vector3Field;
-    connectedNodeVector3: undefined | LogicNode;
-    connectedNodeX: undefined | LogicNode;
-    connectedNodeY: undefined | LogicNode;
-    connectedNodeZ: undefined | LogicNode;
+    connectedOutputVector3: undefined | NodeOutput;
+    connectedOutputX: undefined | NodeOutput;
+    connectedOutputY: undefined | NodeOutput;
+    connectedOutputZ: undefined | NodeOutput;
 
     constructor(x: number, y: number, z: number) {
         super();
@@ -23,8 +25,8 @@ export class ConnectableVector3Field extends NodeField {
     }
 
     GetSimpleVector3(data: ParticleData): SimpleVector3 {
-        if (this.connectedNodeVector3 !== undefined) {
-            const vec3 = this.connectedNodeVector3.Calculate(data) as Vector3;
+        if (this.connectedOutputVector3 !== undefined) {
+            const vec3 = this.connectedOutputVector3.GetOutput(data) as Vector3;
             return { x: vec3.X, y: vec3.Y, z: vec3.Z };
         }
 
@@ -36,7 +38,7 @@ export class ConnectableVector3Field extends NodeField {
     }
 
     GetVector3(data: ParticleData) {
-        if (this.connectedNodeVector3 !== undefined) return this.connectedNodeVector3.Calculate(data) as Vector3;
+        if (this.connectedOutputVector3 !== undefined) return this.connectedOutputVector3.GetOutput(data) as Vector3;
 
         const x = this.GetX(data);
         const y = this.GetY(data);
@@ -50,8 +52,8 @@ export class ConnectableVector3Field extends NodeField {
     };
 
     GetX = (data: ParticleData) => {
-        if (this.connectedNodeX !== undefined) {
-            return this.connectedNodeX.Calculate(data) as number;
+        if (this.connectedOutputX !== undefined) {
+            return this.connectedOutputX.GetOutput(data) as number;
         }
 
         return this.vector3Field.GetX();
@@ -62,8 +64,8 @@ export class ConnectableVector3Field extends NodeField {
     };
 
     GetY = (data: ParticleData) => {
-        if (this.connectedNodeY !== undefined) {
-            return this.connectedNodeY.Calculate(data) as number;
+        if (this.connectedOutputY !== undefined) {
+            return this.connectedOutputY.GetOutput(data) as number;
         }
 
         return this.vector3Field.GetY();
@@ -74,15 +76,15 @@ export class ConnectableVector3Field extends NodeField {
     };
 
     GetZ = (data: ParticleData) => {
-        if (this.connectedNodeZ !== undefined) {
-            return this.connectedNodeZ.Calculate(data) as number;
+        if (this.connectedOutputZ !== undefined) {
+            return this.connectedOutputZ.GetOutput(data) as number;
         }
 
         return this.vector3Field.GetZ();
     };
 
     SetVector3 = (x: number, y: number, z: number) => {
-        this.connectedNodeVector3 = undefined;
+        this.connectedOutputVector3 = undefined;
 
         this.SetX(x, true);
         this.SetY(y, true);
@@ -93,7 +95,7 @@ export class ConnectableVector3Field extends NodeField {
 
     SetX = (x: number, ignoreFieldChange = false) => {
         this.vector3Field.SetX(x);
-        this.connectedNodeX = undefined;
+        this.connectedOutputX = undefined;
 
         if (!ignoreFieldChange) return;
         this.FieldChanged.Fire();
@@ -101,7 +103,7 @@ export class ConnectableVector3Field extends NodeField {
 
     SetY = (y: number, ignoreFieldChange = false) => {
         this.vector3Field.SetY(y);
-        this.connectedNodeY = undefined;
+        this.connectedOutputY = undefined;
 
         if (!ignoreFieldChange) return;
         this.FieldChanged.Fire();
@@ -109,74 +111,159 @@ export class ConnectableVector3Field extends NodeField {
 
     SetZ = (z: number, ignoreFieldChange = false) => {
         this.vector3Field.SetZ(z);
-        this.connectedNodeZ = undefined;
+        this.connectedOutputZ = undefined;
 
         if (!ignoreFieldChange) return;
         this.FieldChanged.Fire();
     };
 
-    ConnectVector3 = (node: LogicNode) => {
-        this.connectedNodeVector3 = node;
+    ConnectVector3 = (output: NodeOutput) => {
+        this.connectedOutputVector3 = output;
         this.FieldChanged.Fire();
     };
 
     DisconnectVector3 = () => {
-        this.connectedNodeVector3 = undefined;
+        this.connectedOutputVector3 = undefined;
         this.FieldChanged.Fire();
     };
 
-    ConnectX = (node: LogicNode) => {
-        this.connectedNodeX = node;
+    ConnectX = (output: NodeOutput) => {
+        this.connectedOutputX = output;
         this.FieldChanged.Fire();
     };
 
     DisconnectX = () => {
-        this.connectedNodeX = undefined;
+        this.connectedOutputX = undefined;
         this.FieldChanged.Fire();
     };
 
-    ConnectY = (node: LogicNode) => {
-        this.connectedNodeY = node;
+    ConnectY = (output: NodeOutput) => {
+        this.connectedOutputY = output;
         this.FieldChanged.Fire();
     };
 
     DisconnectY = () => {
-        this.connectedNodeY = undefined;
+        this.connectedOutputY = undefined;
         this.FieldChanged.Fire();
     };
 
-    ConnectZ = (boundNode: LogicNode) => {
-        this.connectedNodeZ = boundNode;
+    ConnectZ = (output: NodeOutput) => {
+        this.connectedOutputZ = output;
         this.FieldChanged.Fire();
     };
 
     DisconnectZ = () => {
-        this.connectedNodeZ = undefined;
+        this.connectedOutputZ = undefined;
         this.FieldChanged.Fire();
     };
 
     AutoGenerateField(fieldPath: string, src: Src) {
-        if (this.connectedNodeVector3 !== undefined) {
-            this.connectedNodeVector3.GetAutoGenerationCode(src, `${fieldPath}.ConnectVector3(..)`);
+        if (this.connectedOutputVector3 !== undefined) {
+            const parentNode = this.connectedOutputVector3.parent as LogicNode;
+    
+            let vec3Key: string | number | undefined;
+            for (const [key, out] of pairs(parentNode.nodeOutputs)) {
+                if (out === this.connectedOutputVector3) {
+                    vec3Key = key;
+                    break;
+                }
+            }
+    
+            if (!vec3Key) {
+                warn(
+                    `ConnectableVector3Field: could not find Vector3-output on ` +
+                    `${parentNode.GetClassName()}#${parentNode.id}`
+                );
+            } else {
+                const className = parentNode.GetClassName();
+                const varName   = className + parentNode.id; // e.g. "mix3Node12"
+                parentNode.GetAutoGenerationCode(
+                    src,
+                    `${fieldPath}.ConnectVector3(${varName}.nodeOutputs.${vec3Key})`
+                );
+            }
             return;
         }
-
-        if (this.connectedNodeX !== undefined) {
-            this.connectedNodeX.GetAutoGenerationCode(src, `${fieldPath}.ConnectX(..)`);
+    
+        // --- X component ---
+        if (this.connectedOutputX !== undefined) {
+            const parentNode = this.connectedOutputX.parent as LogicNode;
+            let outputXKey: string | number | undefined;
+            for (const [key, out] of pairs(parentNode.nodeOutputs)) {
+                if (out === this.connectedOutputX) {
+                    outputXKey = key;
+                    break;
+                }
+            }
+            if (!outputXKey) {
+                warn(
+                    `ConnectableVector3Field: could not find X-output on ` +
+                    `${parentNode.GetClassName()}#${parentNode.id}`
+                );
+            } else {
+                const className = parentNode.GetClassName();
+                const varName   = className + parentNode.id;
+                parentNode.GetAutoGenerationCode(
+                    src,
+                    `${fieldPath}.ConnectX(${varName}.nodeOutputs.${outputXKey})`
+                );
+            }
         } else {
-            src.value += `${fieldPath}.SetX(${this.vector3Field.GetX()}) \n`;
+            src.value += `${fieldPath}.SetX(${this.vector3Field.GetX()})\n`;
         }
-
-        if (this.connectedNodeY !== undefined) {
-            this.connectedNodeY.GetAutoGenerationCode(src, `${fieldPath}.ConnectY(..)`);
+    
+        // --- Y component ---
+        if (this.connectedOutputY !== undefined) {
+            const parentNode = this.connectedOutputY.parent as LogicNode;
+            let outputYKey: string | number | undefined;
+            for (const [key, out] of pairs(parentNode.nodeOutputs)) {
+                if (out === this.connectedOutputY) {
+                    outputYKey = key;
+                    break;
+                }
+            }
+            if (!outputYKey) {
+                warn(
+                    `ConnectableVector3Field: could not find Y-output on ` +
+                    `${parentNode.GetClassName()}#${parentNode.id}`
+                );
+            } else {
+                const className = parentNode.GetClassName();
+                const varName   = className + parentNode.id;
+                parentNode.GetAutoGenerationCode(
+                    src,
+                    `${fieldPath}.ConnectY(${varName}.nodeOutputs.${outputYKey})`
+                );
+            }
         } else {
-            src.value += `${fieldPath}.SetY(${this.vector3Field.GetY()}) \n`;
+            src.value += `${fieldPath}.SetY(${this.vector3Field.GetY()})\n`;
         }
-
-        if (this.connectedNodeZ !== undefined) {
-            this.connectedNodeZ.GetAutoGenerationCode(src, `${fieldPath}.ConnectZ(..)`);
+    
+        // --- Z component ---
+        if (this.connectedOutputZ !== undefined) {
+            const parentNode = this.connectedOutputZ.parent as LogicNode;
+            let outputZKey: string | number | undefined;
+            for (const [key, out] of pairs(parentNode.nodeOutputs)) {
+                if (out === this.connectedOutputZ) {
+                    outputZKey = key;
+                    break;
+                }
+            }
+            if (!outputZKey) {
+                warn(
+                    `ConnectableVector3Field: could not find Z-output on ` +
+                    `${parentNode.GetClassName()}#${parentNode.id}`
+                );
+            } else {
+                const className = parentNode.GetClassName();
+                const varName   = className + parentNode.id;
+                parentNode.GetAutoGenerationCode(
+                    src,
+                    `${fieldPath}.ConnectZ(${varName}.nodeOutputs.${outputZKey})`
+                );
+            }
         } else {
-            src.value += `${fieldPath}.SetZ(${this.vector3Field.GetZ()}) \n`;
+            src.value += `${fieldPath}.SetZ(${this.vector3Field.GetZ()})\n`;
         }
     }
 

@@ -2,8 +2,10 @@ import type React from "@rbxts/react";
 import { Event } from "API/Bindables/Event";
 import { FastEvent } from "API/Bindables/FastEvent";
 import { NodeGroups } from "API/NodeGroup";
+import { LogicNode } from "API/Nodes/Logic/LogicNode";
 import type { Node } from "API/Nodes/Node";
 import type { RenderNode } from "API/Nodes/Render/RenderNode";
+import { NodeOutput } from "API/Outputs/NodeOutput";
 import { GetMousePositionOnCanvas } from "Windows/MainWindow";
 import { GetZoomScale } from "ZoomScale";
 
@@ -23,6 +25,7 @@ export interface NodeData {
     loadedConnectionsOut?: NodeConnectionOut[];
     connectionsIn: NodeConnectionIn[];
     loadedConnectionsIn?: NodeConnectionIn[];
+    Outputs: { [outputName: string]: NodeOutput } | undefined;
     node: Node;
     dataChanged: FastEvent;
     onDestroy: FastEvent<[NodeData]>;
@@ -47,12 +50,18 @@ export function GetNodeById(id: number) {
 }
 
 export function AddNode(api: Node, create: (data: NodeData) => React.Element) {
+    let api_outputs = undefined
+    if (api instanceof LogicNode){
+        api_outputs = api.nodeOutputs
+    }
+
     const collectionEntry: NodeCollectionEntry = {
         data: {
             anchorPoint: GetMousePositionOnCanvas().div(GetZoomScale()),
             connectionsOut: [],
             connectionsIn: [],
             node: api,
+            Outputs: api_outputs,
             dataChanged: new FastEvent(),
             onDestroy: new FastEvent(),
         },

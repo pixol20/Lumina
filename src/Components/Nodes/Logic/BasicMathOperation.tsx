@@ -4,6 +4,7 @@ import { NumberMath as NumberMathAPI } from "API/Nodes/Logic/NumberMath";
 import ConnectableNumberField from "Components/NodeFields/ConnectableNumberField";
 import StateField from "Components/NodeFields/StateField";
 import { AddNode, type NodeData } from "Services/NodesService";
+import ConnectionPointOut from "Components/Connections/ConnectionPointOut";
 import Node from "../Node";
 
 export function CreateNumberMath(operationType = "Add") {
@@ -27,6 +28,7 @@ function NumberMath({ data }: { data: NodeData }) {
             ConnectionValueType={ValueType.Number}
             Width={175}
         >
+            <ConnectionPointOut NodeId={data.node.id} Label="Result" NodeOutput={(data.node as NumberMathAPI).nodeOutputs.result} ValueType={ValueType.Number} />
             <StateField NodeField={(data.node as NumberMathAPI).nodeFields.operationType} />
             <ConnectableNumberField
                 NodeId={data.node.id}

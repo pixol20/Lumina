@@ -3,6 +3,7 @@ import { ValueType } from "API/Nodes/FieldStates";
 import { AliveTime as AliveTimeAPI } from "API/Nodes/Logic/Alivetime";
 import Div from "Components/Div";
 import { AddNode, type NodeData } from "Services/NodesService";
+import ConnectionPointOut from "Components/Connections/ConnectionPointOut";
 import Node from "../Node";
 
 export function CreateAliveTime() {
@@ -26,7 +27,8 @@ function AliveTime({ data }: { data: NodeData }) {
             IsConnectedToSystem={data.node.connectedSystemId !== undefined}
             ConnectionValueType={ValueType.Number}
         >
-            <Div Size={UDim2.fromOffset(0, 0)} />
+
+            <ConnectionPointOut NodeId={data.node.id} Label="Alive time" NodeOutput={(data.node as AliveTimeAPI).nodeOutputs.aliveTime} ValueType={ValueType.Number} />
         </Node>
     );
 }

@@ -99,6 +99,7 @@ export class MeshParticle extends RenderNode {
     updateLoop: undefined | RBXScriptConnection;
     aliveParticles: ParticleData[];
 
+
     constructor() {
         super();
 
@@ -235,6 +236,7 @@ export class MeshParticle extends RenderNode {
 
                 UpdateParticleProperties(aliveParticleData, this.nodeFields.textures.GetNumbers());
                 aliveParticleData.alivetime += dt;
+                aliveParticleData.frameId += 1;
             }
 
             Workspace.BulkMoveTo(movedParticles, movedParticlesCFrames, Enum.BulkMoveMode.FireCFrameChanged);

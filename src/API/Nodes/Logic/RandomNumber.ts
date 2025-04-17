@@ -4,6 +4,7 @@ import { Rand } from "API/Lib";
 import type { ParticleData } from "API/ParticleService";
 import { RangeCount } from "../FieldStates";
 import { LogicNode } from "./LogicNode";
+import { NumberOutput } from "API/Outputs/NumberOutput";
 
 export class RandomNumber extends LogicNode {
     static className = "RandomNumber";
@@ -14,11 +15,20 @@ export class RandomNumber extends LogicNode {
         range2: new ConnectableVector2Field(0, 0),
     };
 
+    nodeOutputs: { result: NumberOutput } = {
+        result: new NumberOutput(this, 0)
+    };
+
     storedValues: Map<number, number> = new Map();
 
     Calculate = (data: ParticleData) => {
         let value = this.storedValues.get(data.particleId);
-        if (value !== undefined) return value;
+
+        if (value !== undefined) {
+            this.nodeOutputs.result.SetOutput(value) 
+            return
+        }
+        
 
         const rangeCount = this.nodeFields.rangeCount.GetState();
 
@@ -54,7 +64,9 @@ export class RandomNumber extends LogicNode {
             this.storedValues.delete(data.particleId);
         });
 
-        return value;
+        if (value !== undefined){
+            this.nodeOutputs.result.SetOutput(value);
+        }
     };
 
     GetClassName(): string {

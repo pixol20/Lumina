@@ -4,6 +4,7 @@ import { LowerFirstLetter } from "API/Lib";
 import type { Src } from "API/VFXScriptCreator";
 import { PropertyType } from "../FieldStates";
 import { LogicNode } from "./LogicNode";
+import { Vector3Output } from "API/Outputs/Vector3Output";
 
 let Selection: Selection | undefined;
 if (RunService.IsStudio()) {
@@ -25,13 +26,24 @@ export class GetParentProperty extends LogicNode {
         this.parent = parent;
     }
 
+    nodeOutputs: { property: Vector3Output } = {
+        property: new Vector3Output(this, Vector3.zero)
+    };
+
     Calculate = () => {
         if (this.parent === undefined) {
-            if (this.temporaryParent === undefined) return Vector3.zero;
-            return this.GetProperty(this.temporaryParent);
-        }
 
-        return this.GetProperty(this.parent);
+            if (this.temporaryParent === undefined) {
+                this.nodeOutputs.property.SetOutput(Vector3.zero)
+            }
+
+            else {
+                this.nodeOutputs.property.SetOutput(this.GetProperty(this.temporaryParent));
+            }
+        }
+        else {
+            this.nodeOutputs.property.SetOutput(this.GetProperty(this.parent));
+        }
     };
 
     GetProperty(part: BasePart) {

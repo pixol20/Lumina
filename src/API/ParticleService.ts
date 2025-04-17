@@ -34,6 +34,8 @@ export interface ParticleData {
 
     updateNodes: UpdateNode[];
     isRemoving: FastEvent;
+
+    frameId: number;
 }
 
 const idPool = new IdPool();
@@ -69,6 +71,7 @@ export function CreateParticleData(
         color: new Color3(1, 1, 1),
         updateNodes,
         isRemoving: new FastEvent(),
+        frameId: 0,
     };
 
     return particleData[particleId];

@@ -5,6 +5,7 @@ import ConnectableNumberField from "Components/NodeFields/ConnectableNumberField
 import { ConnectableVector2Field } from "Components/NodeFields/ConnectableVector2Field";
 import { AddNode, type NodeData } from "Services/NodesService";
 import Node from "../Node";
+import ConnectionPointOut from "Components/Connections/ConnectionPointOut";
 
 export function CreateRemap() {
     return AddNode(new RemapAPI(), (data: NodeData) => {
@@ -26,6 +27,7 @@ function Remap({ data }: { data: NodeData }) {
             IsConnectedToSystem={data.node.connectedSystemId !== undefined}
             ConnectionValueType={ValueType.Number}
         >
+            <ConnectionPointOut NodeId={data.node.id} Label="Result" NodeOutput={(data.node as RemapAPI).nodeOutputs.result} ValueType={ValueType.Number} />
             <ConnectableNumberField
                 NodeId={data.node.id}
                 NodeField={(data.node as RemapAPI).nodeFields.input}

@@ -3,6 +3,7 @@ import { StateField } from "API/Fields/StateField";
 import type { ParticleData } from "API/ParticleService";
 import { MathOperationType } from "../FieldStates";
 import { LogicNode } from "./LogicNode";
+import { NumberOutput } from "API/Outputs/NumberOutput";
 
 export class NumberMath extends LogicNode {
     static className = "NumberMath";
@@ -11,6 +12,10 @@ export class NumberMath extends LogicNode {
         operationType: new StateField(MathOperationType, MathOperationType.Add),
         a: new ConnectableNumberField(1),
         b: new ConnectableNumberField(0),
+    };
+
+    nodeOutputs: { result: NumberOutput } = {
+        result: new NumberOutput(this, 0)
     };
 
     constructor(operationType: string) {
@@ -38,7 +43,7 @@ export class NumberMath extends LogicNode {
                 break;
         }
 
-        return result;
+        this.nodeOutputs.result.SetOutput(result);
     };
 
     GetClassName(): string {
