@@ -7,6 +7,7 @@ import ConnectableVector3Field from "Components/NodeFields/ConnectableVector3Fie
 import StateField from "Components/NodeFields/StateField";
 import { AddNode, type NodeData } from "Services/NodesService";
 import Node from "../Node";
+import ConnectionPointOut from "Components/Connections/ConnectionPointOut";
 
 export function CreateVectorMath(operationType: string = MathOperationType.Add) {
     return AddNode(new VectorMathAPI(operationType), (data: NodeData) => {
@@ -70,13 +71,14 @@ function VectorMath({ data }: { data: NodeData }) {
             ConnectionValueType={ValueType.Vector3}
             Width={150}
         >
+
             <StateField NodeId={data.node.id} NodeField={operationTypeRef.current} />
             <StateField NodeId={data.node.id} NodeField={valueTypeARef.current} />
             {(operationType === MathOperationType.Multiply || operationType === MathOperationType.Divide) &&
                 valueTypeA === ValueType.Vector2 && <StateField NodeId={data.node.id} NodeField={valueTypeB1Ref.current} />}
             {(operationType === MathOperationType.Multiply || operationType === MathOperationType.Divide) &&
                 valueTypeA === ValueType.Vector3 && <StateField NodeId={data.node.id} NodeField={valueTypeB2Ref.current} />}
-
+            
             {valueTypeA === ValueType.Vector2 && (
                 <ConnectableVector2Field
                     NodeId={data.node.id}
@@ -93,7 +95,6 @@ function VectorMath({ data }: { data: NodeData }) {
                     Label={"A"}
                 />
             )}
-
             {((valueTypeA === ValueType.Vector2 && valueTypeB1 === ValueType.Number) ||
                 (valueTypeA === ValueType.Vector3 && valueTypeB2 === ValueType.Number)) && (
                 <ConnectableNumberField
@@ -104,6 +105,8 @@ function VectorMath({ data }: { data: NodeData }) {
                     AllowNegative={true}
                 />
             )}
+
+
             {valueTypeA === ValueType.Vector2 && valueTypeB1 === ValueType.Vector2 && (
                 <ConnectableVector2Field
                     NodeId={data.node.id}
@@ -119,6 +122,16 @@ function VectorMath({ data }: { data: NodeData }) {
                     NodeFieldName={"vector3B"}
                     Label={"B"}
                 />
+                
+            )}
+            {/* For some reason this is the only way to normally output. Outputs will be in wrong places otherwise */}
+            {/* TODO: find a way to put outputs at the top */}
+            {valueTypeA === ValueType.Vector3 && valueTypeB2 === ValueType.Vector3 && (
+                <ConnectionPointOut NodeId={data.node.id} Label="Vector3" NodeOutput={(data.node as VectorMathAPI).nodeOutputs.vector3} ValueType={ValueType.Vector3} />
+            )}
+
+            {valueTypeA === ValueType.Vector2 && valueTypeB1 === ValueType.Vector2 && (
+                <ConnectionPointOut NodeId={data.node.id} Label="Vector2" NodeOutput={(data.node as VectorMathAPI).nodeOutputs.vector2} ValueType={ValueType.Vector2} />
             )}
         </Node>
     );

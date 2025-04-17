@@ -54,8 +54,8 @@ export default function ConnectableNumberField({
                 NodeId={NodeId}
                 NodeFieldName={NodeFieldName}
                 ValueType={ValueType.Number}
-                BindNode={NodeField.ConnectNode}
-                UnbindNode={NodeField.DisconnectNode}
+                BindOutput={NodeField.ConnectOutput}
+                UnbindOutput={NodeField.DisconnectOutput}
             />
 
             {Label !== undefined && (
@@ -68,7 +68,7 @@ export default function ConnectableNumberField({
                 Size={new UDim2(1, 0, 0, 20)}
                 Text={() => NodeField.GetNumberAsText()}
                 AllowNegative={AllowNegative}
-                Disabled={NodeField.connectedNode !== undefined}
+                Disabled={NodeField.connectedOutput !== undefined}
                 NumberChanged={OverrideSetNumber || (NodeField.SetNumber as () => undefined)}
             >
                 <uiflexitem FlexMode={"Fill"} />

@@ -5,6 +5,7 @@ import { ConnectableVector2Field } from "Components/NodeFields/ConnectableVector
 import StateField from "Components/NodeFields/StateField";
 import { AddNode, type NodeData } from "Services/NodesService";
 import Node from "../Node";
+import ConnectionPointOut from "Components/Connections/ConnectionPointOut";
 
 export function CreateRandomNumber() {
     return AddNode(new RandomNumberAPI(), (data: NodeData) => {
@@ -41,6 +42,7 @@ function RandomNumber({ data }: { data: NodeData }) {
             IsConnectedToSystem={data.node.connectedSystemId !== undefined}
             ConnectionValueType={ValueType.Number}
         >
+            <ConnectionPointOut NodeId={data.node.id} Label="Result" NodeOutput={(data.node as RandomNumberAPI).nodeOutputs.result} ValueType={ValueType.Number} />
             <StateField NodeField={rangeCountFieldRef.current} />
             <ConnectableVector2Field
                 NodeId={data.node.id}

@@ -5,6 +5,7 @@ import ConnectableNumberField from "Components/NodeFields/ConnectableNumberField
 import StateField from "Components/NodeFields/StateField";
 import { AddNode, type NodeData } from "Services/NodesService";
 import Node from "../Node";
+import ConnectionPointOut from "Components/Connections/ConnectionPointOut";
 
 export function CreateTrigonometry(trigonometryType = TrigonometryType.Sin) {
     return AddNode(new TrigonometryAPI(trigonometryType), (data: NodeData) => {
@@ -27,6 +28,7 @@ function Trigonometry({ data }: { data: NodeData }) {
             ConnectionValueType={ValueType.Number}
             Width={175}
         >
+            <ConnectionPointOut NodeId={data.node.id} Label="Result" NodeOutput={(data.node as TrigonometryAPI).nodeOutputs.result} ValueType={ValueType.Number} />
             <StateField NodeField={(data.node as TrigonometryAPI).nodeFields.trigonometryType} />
             <ConnectableNumberField
                 NodeId={data.node.id}

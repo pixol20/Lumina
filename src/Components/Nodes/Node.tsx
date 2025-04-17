@@ -4,7 +4,6 @@ import type { FastEventConnection } from "API/Bindables/FastEvent";
 import { NodeField } from "API/Fields/NodeField";
 import type { LogicNode } from "API/Nodes/Logic/LogicNode";
 import { BasicTextLabel } from "Components/Basic/BasicTextLabel";
-import ConnectionPointOut from "Components/Connections/ConnectionPointOut";
 import Div from "Components/Div";
 import { NODE_WIDTH } from "Components/SizeConfig";
 import { GetCanvasData } from "Services/CanvasService";
@@ -183,14 +182,14 @@ function Node({
                 <BasicTextLabel Size={new UDim2(1, 0, 0, 20)} Text={Name}>
                     <uiflexitem FlexMode={"Fill"} />
                 </BasicTextLabel>
-                {ConnectionValueType !== undefined && <ConnectionPointOut NodeId={NodeId} ValueType={ConnectionValueType} />}
             </Div>
             <Div Size={UDim2.fromScale(1, 0)} AutomaticSize="Y">
-                <uilistlayout Padding={new UDim(0, 5 * zoomScale)} />
-                <uipadding PaddingLeft={new UDim(0, 10 * zoomScale)} />
-
+                <uilistlayout
+                    Padding={new UDim(0, 5 * zoomScale)}
+                    HorizontalAlignment="Right"
+                />
                 {children}
-            </Div>
+            </Div>            
         </imagebutton>
     );
 }

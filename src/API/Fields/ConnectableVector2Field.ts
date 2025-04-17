@@ -3,6 +3,7 @@ import type { ParticleData } from "API/ParticleService";
 import type { Src } from "API/VFXScriptCreator";
 import { NodeField } from "./NodeField";
 import { type SimpleVector2, Vector2Field } from "./Vector2Field";
+import { NodeOutput } from "API/Outputs/NodeOutput";
 
 interface SerializedData {
     x: number;
@@ -11,9 +12,9 @@ interface SerializedData {
 
 export class ConnectableVector2Field extends NodeField {
     vector2Field: Vector2Field;
-    connectedNodeVector2: undefined | LogicNode;
-    connectedNodeX: undefined | LogicNode;
-    connectedNodeY: undefined | LogicNode;
+    connectedOutputVector2: undefined | NodeOutput;
+    connectedOutputX: undefined | NodeOutput;
+    connectedOutputY: undefined | NodeOutput;
 
     constructor(x: number, y: number) {
         super();
@@ -21,8 +22,8 @@ export class ConnectableVector2Field extends NodeField {
     }
 
     GetSimpleVector2(data: ParticleData): SimpleVector2 {
-        if (this.connectedNodeVector2 !== undefined) {
-            const vec2 = this.connectedNodeVector2.Calculate(data) as Vector2;
+        if (this.connectedOutputVector2 !== undefined) {
+            const vec2 = this.connectedOutputVector2.GetOutput(data) as Vector2;
             return { x: vec2.X, y: vec2.Y };
         }
 
@@ -33,7 +34,7 @@ export class ConnectableVector2Field extends NodeField {
     }
 
     GetVector2(data: ParticleData) {
-        if (this.connectedNodeVector2 !== undefined) return this.connectedNodeVector2.Calculate(data) as Vector2;
+        if (this.connectedOutputVector2 !== undefined) return this.connectedOutputVector2.GetOutput(data) as Vector2;
 
         const x = this.GetX(data);
         const y = this.GetY(data);
@@ -46,8 +47,8 @@ export class ConnectableVector2Field extends NodeField {
     };
 
     GetX = (data: ParticleData) => {
-        if (this.connectedNodeX !== undefined) {
-            return this.connectedNodeX.Calculate(data) as number;
+        if (this.connectedOutputX !== undefined) {
+            return this.connectedOutputX.GetOutput(data) as number;
         }
 
         return this.vector2Field.GetX();
@@ -58,15 +59,15 @@ export class ConnectableVector2Field extends NodeField {
     };
 
     GetY = (data: ParticleData) => {
-        if (this.connectedNodeY !== undefined) {
-            return this.connectedNodeY.Calculate(data) as number;
+        if (this.connectedOutputY !== undefined) {
+            return this.connectedOutputY.GetOutput(data) as number;
         }
 
         return this.vector2Field.GetY();
     };
 
     SetVector2 = (x: number, y: number) => {
-        this.connectedNodeVector2 = undefined;
+        this.connectedOutputVector2 = undefined;
 
         this.SetX(x, true);
         this.SetY(y, true);
@@ -76,7 +77,7 @@ export class ConnectableVector2Field extends NodeField {
 
     SetX = (x: number, ignoreFieldChange = false) => {
         this.vector2Field.SetX(x);
-        this.connectedNodeX = undefined;
+        this.connectedOutputX = undefined;
 
         if (!ignoreFieldChange) return;
         this.FieldChanged.Fire();
@@ -84,53 +85,103 @@ export class ConnectableVector2Field extends NodeField {
 
     SetY = (y: number, ignoreFieldChange = false) => {
         this.vector2Field.SetY(y);
-        this.connectedNodeY = undefined;
+        this.connectedOutputY = undefined;
 
         if (!ignoreFieldChange) return;
         this.FieldChanged.Fire();
     };
 
-    ConnectVector2 = (node: LogicNode) => {
-        this.connectedNodeVector2 = node;
+    ConnectVector2 = (output: NodeOutput) => {
+        this.connectedOutputVector2 = output;
         this.FieldChanged.Fire();
     };
 
     DisconnectVector2 = () => {
-        this.connectedNodeVector2 = undefined;
+        this.connectedOutputVector2 = undefined;
         this.FieldChanged.Fire();
     };
 
-    ConnectX = (node: LogicNode) => {
-        this.connectedNodeX = node;
+    ConnectX = (output: NodeOutput) => {
+        this.connectedOutputX = output;
         this.FieldChanged.Fire();
     };
 
     DisconnectX = () => {
-        this.connectedNodeX = undefined;
+        this.connectedOutputX = undefined;
         this.FieldChanged.Fire();
     };
 
-    ConnectY = (node: LogicNode) => {
-        this.connectedNodeY = node;
+    ConnectY = (output: NodeOutput) => {
+        this.connectedOutputY = output;
         this.FieldChanged.Fire();
     };
 
     DisconnectY = () => {
-        this.connectedNodeY = undefined;
+        this.connectedOutputY = undefined;
         this.FieldChanged.Fire();
     };
 
     AutoGenerateField(fieldPath: string, src: Src) {
-        if (this.connectedNodeX !== undefined) {
-            this.connectedNodeX.GetAutoGenerationCode(src, `${fieldPath}.ConnectX(..)`);
+        // --- X component ---
+        if (this.connectedOutputX !== undefined) {
+            const parentNode = this.connectedOutputX.parent as LogicNode;
+    
+            // find which key in nodeOutputs maps to this.connectedOutputX
+            let outputXKey: string | number | undefined;
+            for (const [key, out] of pairs(parentNode.nodeOutputs)) {
+                if (out === this.connectedOutputX) {
+                    outputXKey = key;
+                    break;
+                }
+            }
+    
+            if (!outputXKey) {
+                warn(
+                    `ConnectableVector2Field: could not find X-output on ` +
+                    `${parentNode.GetClassName()}#${parentNode.id}`
+                );
+            } else {
+                const className = parentNode.GetClassName();
+                const varName   = className + parentNode.id;
+    
+                parentNode.GetAutoGenerationCode(
+                    src,
+                    `${fieldPath}.ConnectX(${varName}.nodeOutputs.${outputXKey})`
+                );
+            }
         } else {
-            src.value += `${fieldPath}.SetX(${this.vector2Field.GetX()}) \n`;
+            src.value += `${fieldPath}.SetX(${this.vector2Field.GetX()})\n`;
         }
+    
 
-        if (this.connectedNodeY !== undefined) {
-            this.connectedNodeY.GetAutoGenerationCode(src, `${fieldPath}.ConnectY(..)`);
+        if (this.connectedOutputY !== undefined) {
+            const parentNode = this.connectedOutputY.parent as LogicNode;
+    
+
+            let outputYKey: string | number | undefined;
+            for (const [key, out] of pairs(parentNode.nodeOutputs)) {
+                if (out === this.connectedOutputY) {
+                    outputYKey = key;
+                    break;
+                }
+            }
+    
+            if (!outputYKey) {
+                warn(
+                    `ConnectableVector2Field: could not find Y-output on ` +
+                    `${parentNode.GetClassName()}#${parentNode.id}`
+                );
+            } else {
+                const className = parentNode.GetClassName();
+                const varName   = className + parentNode.id;
+    
+                parentNode.GetAutoGenerationCode(
+                    src,
+                    `${fieldPath}.ConnectY(${varName}.nodeOutputs.${outputYKey})`
+                );
+            }
         } else {
-            src.value += `${fieldPath}.SetY(${this.vector2Field.GetY()}) \n`;
+            src.value += `${fieldPath}.SetY(${this.vector2Field.GetY()})\n`;
         }
     }
 

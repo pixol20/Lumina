@@ -3,6 +3,7 @@ import { StateField } from "API/Fields/StateField";
 import type { ParticleData } from "API/ParticleService";
 import { TrigonometryType } from "../FieldStates";
 import { LogicNode } from "./LogicNode";
+import { NumberOutput } from "API/Outputs/NumberOutput";
 
 export class Trigonometry extends LogicNode {
     static className = "Trigonometry";
@@ -10,6 +11,10 @@ export class Trigonometry extends LogicNode {
     nodeFields = {
         trigonometryType: new StateField(TrigonometryType, TrigonometryType.Sin),
         input: new ConnectableNumberField(0),
+    };
+
+    nodeOutputs: { result: NumberOutput } = {
+        result: new NumberOutput(this, 0)
     };
 
     constructor(trigonometryType: string) {

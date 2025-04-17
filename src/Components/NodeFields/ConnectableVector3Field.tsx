@@ -33,12 +33,12 @@ export default function ConnectableVector3Field({
 
     const wasOpenRef = useRef(false);
 
-    if (wasOpenRef.current && NodeField.connectedNodeVector3 === undefined) {
+    if (wasOpenRef.current && NodeField.connectedOutputVector3 === undefined) {
         setIsCollapsed(false);
         wasOpenRef.current = false;
     }
 
-    if (!isCollapsed && NodeField.connectedNodeVector3 !== undefined) {
+    if (!isCollapsed && NodeField.connectedOutputVector3 !== undefined) {
         wasOpenRef.current = !isCollapsed;
         setIsCollapsed(true);
     }
@@ -75,12 +75,12 @@ export default function ConnectableVector3Field({
                     NodeFieldName={NodeFieldName}
                     ValueName={"XYZ"}
                     ValueType={ValueType.Vector3}
-                    BindNode={NodeField.ConnectVector3}
-                    UnbindNode={NodeField.DisconnectVector3}
+                    BindOutput={NodeField.ConnectVector3}
+                    UnbindOutput={NodeField.DisconnectVector3}
                 />
                 <BasicTextLabel Size={new UDim2(0, 0, 0, 20)} AutomaticSize="X" Text={Label} />
 
-                {NodeField.connectedNodeVector3 === undefined && (
+                {NodeField.connectedOutputVector3 === undefined && (
                     <imagebutton
                         Size={UDim2.fromOffset(16 * zoomScale, 16 * zoomScale)}
                         BackgroundTransparency={1}
@@ -96,7 +96,7 @@ export default function ConnectableVector3Field({
                 )}
             </Div>
 
-            {!isCollapsed && NodeField.connectedNodeVector3 === undefined && (
+            {!isCollapsed && NodeField.connectedOutputVector3 === undefined && (
                 <Div Size={UDim2.fromScale(1, 0)} AutomaticSize="Y">
                     <uipadding PaddingLeft={new UDim(0, 10 * zoomScale)} />
                     <uilistlayout FillDirection="Vertical" Padding={new UDim(0, 5 * zoomScale)} />
@@ -109,8 +109,8 @@ export default function ConnectableVector3Field({
                             NodeFieldName={NodeFieldName}
                             ValueName={"X"}
                             ValueType={ValueType.Number}
-                            BindNode={NodeField.ConnectX}
-                            UnbindNode={NodeField.DisconnectX}
+                            BindOutput={NodeField.ConnectX}
+                            UnbindOutput={NodeField.DisconnectX}
                         />
                         <BasicTextLabel Size={UDim2.fromOffset(0, 20)} AutomaticSize="X" Text={ValueLabels[0]} TextYAlignment="Bottom" />
                         <NumberInput
@@ -119,7 +119,7 @@ export default function ConnectableVector3Field({
                             Size={new UDim2(1, 0, 0, 20)}
                             Text={() => NodeField.GetXAsText()}
                             AllowNegative={AllowNegatives[0]}
-                            Disabled={NodeField.connectedNodeX !== undefined}
+                            Disabled={NodeField.connectedOutputX !== undefined}
                             NumberChanged={NodeField.SetX as (value: number) => undefined}
                         >
                             <uiflexitem FlexMode={"Fill"} />
@@ -133,8 +133,8 @@ export default function ConnectableVector3Field({
                             NodeFieldName={NodeFieldName}
                             ValueName={"Y"}
                             ValueType={ValueType.Number}
-                            BindNode={NodeField.ConnectY}
-                            UnbindNode={NodeField.DisconnectY}
+                            BindOutput={NodeField.ConnectY}
+                            UnbindOutput={NodeField.DisconnectY}
                         />
                         <BasicTextLabel Size={UDim2.fromOffset(0, 20)} AutomaticSize="X" Text={ValueLabels[1]} TextYAlignment="Bottom" />
                         <NumberInput
@@ -143,7 +143,7 @@ export default function ConnectableVector3Field({
                             Size={new UDim2(1, 0, 0, 20)}
                             Text={() => NodeField.GetYAsText()}
                             AllowNegative={AllowNegatives[1]}
-                            Disabled={NodeField.connectedNodeY !== undefined}
+                            Disabled={NodeField.connectedOutputY !== undefined}
                             NumberChanged={NodeField.SetY as (value: number) => undefined}
                         >
                             <uiflexitem FlexMode={"Fill"} />
@@ -157,8 +157,8 @@ export default function ConnectableVector3Field({
                             NodeFieldName={NodeFieldName}
                             ValueName={"Z"}
                             ValueType={ValueType.Number}
-                            BindNode={NodeField.ConnectZ}
-                            UnbindNode={NodeField.DisconnectZ}
+                            BindOutput={NodeField.ConnectZ}
+                            UnbindOutput={NodeField.DisconnectZ}
                         />
                         <BasicTextLabel Size={UDim2.fromOffset(0, 20)} AutomaticSize="X" Text={ValueLabels[2]} TextYAlignment="Bottom" />
                         <NumberInput
@@ -167,7 +167,7 @@ export default function ConnectableVector3Field({
                             Size={new UDim2(1, 0, 0, 20)}
                             Text={() => NodeField.GetZAsText()}
                             AllowNegative={AllowNegatives[2]}
-                            Disabled={NodeField.connectedNodeZ !== undefined}
+                            Disabled={NodeField.connectedOutputZ !== undefined}
                             NumberChanged={NodeField.SetZ as (value: number) => undefined}
                         >
                             <uiflexitem FlexMode={"Fill"} />

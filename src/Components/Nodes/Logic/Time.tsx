@@ -4,6 +4,7 @@ import { Time as TimeAPI } from "API/Nodes/Logic/Time";
 import Div from "Components/Div";
 import { AddNode, type NodeData } from "Services/NodesService";
 import Node from "../Node";
+import ConnectionPointOut from "Components/Connections/ConnectionPointOut";
 
 export function CreateTime() {
     return AddNode(new TimeAPI(), (data: NodeData) => {
@@ -26,6 +27,7 @@ function Time({ data }: { data: NodeData }) {
             IsConnectedToSystem={data.node.connectedSystemId !== undefined}
             ConnectionValueType={ValueType.Number}
         >
+            <ConnectionPointOut NodeId={data.node.id} Label="Time" NodeOutput={(data.node as TimeAPI).nodeOutputs.result} ValueType={ValueType.Number} />
             <Div Size={UDim2.fromOffset(0, 0)} />
         </Node>
     );

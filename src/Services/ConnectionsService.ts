@@ -6,12 +6,13 @@ import { CreateConnectionLine } from "Components/Connections/ConnectionLine";
 import { ReloadConnectionVisuals } from "Components/Events";
 import { GetMousePositionOnCanvas } from "Windows/MainWindow";
 import type { NodeData } from "./NodesService";
+import { NodeOutput } from "API/Outputs/NodeOutput";
 
 export interface ConnectionData {
     id: number;
     valueType: string;
     loadedId?: number;
-    startNode: NodeData;
+    startOutput: NodeOutput;
     startElement: ImageButton;
     endPos?: Vector2;
     endElement?: ImageButton;
@@ -41,13 +42,13 @@ export function GetConnectionById(id: number) {
     return ConnectionCollection.find((connection) => connection.data.id === id);
 }
 
-export function CreateConnection(startNode: NodeData, startElement: ImageButton, valueType: string, loadedId?: number) {
+export function CreateConnection(startOutput: NodeOutput, startElement: ImageButton, valueType: string, loadedId?: number) {
     const connection: ConnectionCollectionEntry = {
         data: {
             id: idPool.GetNextId(),
             valueType,
             loadedId,
-            startNode,
+            startOutput,
             startElement,
             isDestroying: false,
             onDestroy: new Event(),

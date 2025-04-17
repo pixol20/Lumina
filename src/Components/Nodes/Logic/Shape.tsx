@@ -11,6 +11,7 @@ import StateField from "Components/NodeFields/StateField";
 import { AddNode, type NodeData } from "Services/NodesService";
 import { GetZoomScale } from "ZoomScale";
 import Node from "../Node";
+import ConnectionPointOut from "Components/Connections/ConnectionPointOut";
 
 export function CreateShape() {
     return AddNode(new ShapeAPI(), (data: NodeData) => {
@@ -67,7 +68,7 @@ function Shape({ data }: { data: NodeData }) {
             ConnectionValueType={ValueType.Vector3}
         >
             <StateField NodeField={(data.node as ShapeAPI).nodeFields.spawnShape} />
-
+            <ConnectionPointOut NodeId={data.node.id} Label="Result" NodeOutput={(data.node as ShapeAPI).nodeOutputs.result} ValueType={ValueType.Vector3} />
             <Div Size={UDim2.fromScale(1, 0)} AutomaticSize="Y">
                 <uilistlayout Padding={new UDim(0, 5 * zoomScale)} HorizontalAlignment={"Center"} />
 

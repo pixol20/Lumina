@@ -359,6 +359,7 @@ export class PlaneParticle extends RenderNode {
 
                 UpdateParticleProperties(aliveParticleData);
                 aliveParticleData.alivetime += dt;
+                aliveParticleData.frameId += 1;
             }
 
             Workspace.BulkMoveTo(movedParticles, movedParticlesCFrames, Enum.BulkMoveMode.FireCFrameChanged);

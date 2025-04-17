@@ -14,6 +14,7 @@ import {
 } from "Services/ConnectionsService";
 import { GetNodeById, type NodeCollectionEntry, type NodeConnectionIn, UpdateNodeData } from "Services/NodesService";
 import { GetZoomScale } from "ZoomScale";
+import { NodeOutput } from "API/Outputs/NodeOutput";
 import ConnectionPoint from "./ConnectionPoint";
 
 interface Props {
@@ -24,8 +25,8 @@ interface Props {
     NodeFieldName: string;
     ValueName?: string;
     ValueType: string;
-    BindNode: (boundNode: LogicNode) => void;
-    UnbindNode: () => void;
+    BindOutput: (boundNode: NodeOutput) => void;
+    UnbindOutput: () => void;
 }
 
 export default function ConnectionPointIn({
@@ -36,8 +37,8 @@ export default function ConnectionPointIn({
     Position = UDim2.fromScale(0, 0),
     Size = UDim2.fromOffset(20 * GetZoomScale(), 20 * GetZoomScale()),
     ValueType,
-    BindNode,
-    UnbindNode,
+    BindOutput,
+    UnbindOutput,
 }: Props) {
     const [connectionId, setConnectionId] = useState(-1);
     const connectionIdRef = useRef(-1);
@@ -81,7 +82,7 @@ export default function ConnectionPointIn({
             destroyConnection.Disconnect();
 
             updateConnectionId(-1);
-            UnbindNode();
+            UnbindOutput();
 
             if (GetNodeById(NodeId) === undefined) return;
 
@@ -95,7 +96,7 @@ export default function ConnectionPointIn({
             });
         });
 
-        BindNode(connectionData.startNode.node as LogicNode);
+        BindOutput(connectionData.startOutput as NodeOutput);
 
         coroutine.wrap(() => {
             task.wait();
@@ -118,7 +119,7 @@ export default function ConnectionPointIn({
         if (movingConnectionId === -1) return;
 
         const connectionData = (GetConnectionById(movingConnectionId) as ConnectionCollectionEntry).data;
-        if (connectionData.startNode.node.id === NodeId) return;
+        if (connectionData.startOutput.parent.id === NodeId) return;
 
         if (connectionData.valueType !== ValueType) return;
 
