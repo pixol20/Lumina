@@ -126,11 +126,11 @@ function VectorMath({ data }: { data: NodeData }) {
             )}
             {/* For some reason this is the only way to normally output. Outputs will be in wrong places otherwise */}
             {/* TODO: find a way to put outputs at the top */}
-            {valueTypeA === ValueType.Vector3 && valueTypeB2 === ValueType.Vector3 && (
+            {valueTypeA === ValueType.Vector3 && (
                 <ConnectionPointOut NodeId={data.node.id} Label="Vector3" NodeOutput={(data.node as VectorMathAPI).nodeOutputs.vector3} ValueType={ValueType.Vector3} />
             )}
 
-            {valueTypeA === ValueType.Vector2 && valueTypeB1 === ValueType.Vector2 && (
+            {valueTypeA === ValueType.Vector2 && (
                 <ConnectionPointOut NodeId={data.node.id} Label="Vector2" NodeOutput={(data.node as VectorMathAPI).nodeOutputs.vector2} ValueType={ValueType.Vector2} />
             )}
         </Node>
