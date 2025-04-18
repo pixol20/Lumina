@@ -31,7 +31,6 @@ function Node({
     NodeId,
     NodeAnchorPoint,
     IsConnectedToSystem,
-    ConnectionValueType = undefined,
     children,
 }: React.PropsWithChildren<Props>) {
     const [_, setForceRender] = useState(0);

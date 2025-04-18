@@ -33,7 +33,18 @@ function ValueOut({ data }: { data: NodeData }) {
             ConnectionValueType={valueType}
             Width={150}
         >
-            <ConnectionPointOut NodeId={data.node.id} Label="Value" NodeOutput={(data.node as ValueOutAPI).nodeOutputs.result} ValueType={ValueType.Number} />
+            {valueType === ValueType.Number && (
+                <ConnectionPointOut NodeId={data.node.id} Label="Value" NodeOutput={(data.node as ValueOutAPI).nodeOutputs.result} ValueType={ValueType.Number} />
+            )}
+
+            {valueType === ValueType.Vector2 && (
+                <ConnectionPointOut NodeId={data.node.id} Label="Value" NodeOutput={(data.node as ValueOutAPI).nodeOutputs.result} ValueType={ValueType.Vector2} />
+            )}
+
+            {valueType === ValueType.Vector3 && (
+                <ConnectionPointOut NodeId={data.node.id} Label="Value" NodeOutput={(data.node as ValueOutAPI).nodeOutputs.result} ValueType={ValueType.Vector3} />
+            )}
+
             <StateField NodeId={data.node.id} NodeField={valueTypeRef.current} />
 
             {valueType === ValueType.Number && (
