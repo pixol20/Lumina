@@ -29,10 +29,12 @@ export class ValueOut extends LogicNode {
                 value = this.nodeFields.numberIn.GetNumber();
                 break;
             case ValueType.Vector2:
-                value = this.nodeFields.vector2In.GetVector2();
+                let simpleVector2 =  this.nodeFields.vector2In.GetVector2();
+                value = new Vector2(simpleVector2.x, simpleVector2.y)
                 break;
             case ValueType.Vector3:
-                value = this.nodeFields.vector3In.GetVector3();
+                let simpleVector3 = this.nodeFields.vector3In.GetVector3();
+                value = new Vector3(simpleVector3.x, simpleVector3.y, simpleVector3.z);
                 break;
         }
 

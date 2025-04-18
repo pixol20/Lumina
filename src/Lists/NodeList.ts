@@ -72,6 +72,8 @@ import { CreateMultiplyVelocityOverLife } from "Components/Nodes/Update/Multiply
 import { CreateSetColorOverLife } from "Components/Nodes/Update/SetColorOverLife";
 import { CreateSetSizeOverLife } from "Components/Nodes/Update/SetSizeOverLife";
 import { CreateSetTransparencyOverLife } from "Components/Nodes/Update/SetTransparencyOverLife";
+import { VectorSplit } from "API/Nodes/Logic/VectorSplit";
+import { CreateVectorSplit } from "Components/Nodes/Logic/VectorSplit";
 
 // hehe, imports brr
 
@@ -415,4 +417,12 @@ export const NodeList: SelectionEntry[] = [
             create: () => CreateMultiplyRotationOverLife(),
         },
     },
+    {
+        className: VectorSplit.className,
+        nodeGroups: VectorSplit.nodeGroups,
+        defaultEntry: {
+            name: "Split vector",
+            create: () => CreateVectorSplit(),
+        },
+    }
 ];
