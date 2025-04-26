@@ -31,7 +31,7 @@ interface Props {
         order: number;
         valueType: string;
         valueName: string;
-        fn: (data: ParticleData) => number | Vector2 | Vector3;
+        fn: (data: ParticleData) => number | Vector2 | Vector3 | Color3;
         label?: string;
     }>;
 }
