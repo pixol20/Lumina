@@ -7,7 +7,7 @@ import { LerpNumber, ReduceDecimals, RemapValue, RoundDecimal } from "API/Lib";
 import { BasicTextLabel } from "Components/Basic/BasicTextLabel";
 import { NumberInput } from "Components/Basic/NumberInput";
 import Div from "Components/Div";
-import { StyleColors } from "Style";
+import { StyleColors } from "API/Style";
 import { GetWindow, Windows } from "Services/WindowSevice";
 import LineGraphPoint from "./LineGraphPoint";
 
